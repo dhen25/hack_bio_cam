@@ -36,11 +36,18 @@ def compute_system_state(
     node3 = nodes["node3"]
     node4 = nodes["node4"]
 
-    coc, basin = concentration_model(node1_ec=node1["ec"], node2_ec=node2["ec"], makeup=makeup)
-    corrosion = corrosion_model(
-        node2_ph=node2["ph"], node2_turbidity=node2["turbidity"], node3_turbidity=node3["turbidity"]
-    )
     internal = nodes.get("_internal", {})
+    coc, basin = concentration_model(node1_ec=node1["ec"], node2_ec=node2["ec"], makeup=makeup)
+    ambient_temp_c = float(internal.get("ambient_temp_c", 35.0))
+    corrosion = corrosion_model(
+        node2_ph=node2["ph"],
+        node3_ph=node3["ph"],
+        node2_ec=node2["ec"],
+        node3_ec=node3["ec"],
+        node2_turbidity=node2["turbidity"],
+        node3_turbidity=node3["turbidity"],
+        ambient_temp_c=ambient_temp_c,
+    )
     biocide = biocide_model(
         biocide_dose_mgL=float(internal.get("true_biocide_residual", 1.0)),
         hours_since_dose=0.0,
@@ -49,6 +56,7 @@ def compute_system_state(
     phosphorus = phosphorus_estimate(coc, makeup["inhibitor_phosphorus_mgL"])
     compliance = blowdown_predictor(
         node4=node4,
+        basin=basin,
         corrosion=corrosion,
         biocide=biocide,
         phosphorus_mgL=phosphorus,

@@ -29,12 +29,25 @@ class CoolSenseClient:
     def forecast(self, horizon_hours: int = 6) -> dict[str, Any]:
         return self._get("/v1/forecast", horizon_hours=horizon_hours)
 
+    def model_status(self) -> dict[str, Any]:
+        return self._get("/v1/model/status")
+
     def inject_event(self, event_type: str, magnitude: float = 1.0) -> dict[str, Any]:
         response = httpx.post(
             f"{self.base_url}/v1/events/inject",
             json={"type": event_type, "magnitude": magnitude},
             headers=self._headers,
             timeout=5.0,
+        )
+        response.raise_for_status()
+        return response.json()
+
+    def train_model(self, n_scenarios: int = 300, seed: int = 42) -> dict[str, Any]:
+        response = httpx.post(
+            f"{self.base_url}/v1/model/train",
+            params={"n_scenarios": n_scenarios, "seed": seed},
+            headers=self._headers,
+            timeout=30.0,
         )
         response.raise_for_status()
         return response.json()

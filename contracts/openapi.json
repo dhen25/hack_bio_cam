@@ -794,6 +794,30 @@
         "operationId": "train_model_v1_model_train_post",
         "parameters": [
           {
+            "in": "query",
+            "name": "n_scenarios",
+            "required": false,
+            "schema": {
+              "default": 500,
+              "maximum": 5000,
+              "minimum": 50,
+              "title": "N Scenarios",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "seed",
+            "required": false,
+            "schema": {
+              "default": 42,
+              "maximum": 999999,
+              "minimum": 0,
+              "title": "Seed",
+              "type": "integer"
+            }
+          },
+          {
             "in": "header",
             "name": "X-API-Key",
             "required": false,

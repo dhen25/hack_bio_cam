@@ -3,17 +3,19 @@ from __future__ import annotations
 
 def blowdown_predictor(
     node4: dict[str, float],
+    basin: dict[str, float],
     corrosion: dict[str, float | str],
     biocide: dict[str, float | str],
     phosphorus_mgL: float,
     permit_limits: dict[str, float],
     blowdown_m3_day: float = 50.0,
 ) -> dict:
-    cu_ppb = float(corrosion["cu_ppb"])
-    zn_ppb = float(corrosion["zn_ppb"])
+    cu_ppb = float(basin.get("estimated_makeup_cu_ppb", 0.0)) + float(corrosion["cu_ppb"])
+    zn_ppb = float(basin.get("estimated_makeup_zn_ppb", 0.0)) + float(corrosion["zn_ppb"])
     trc = float(biocide["total_chlorine_mgL"])
     ph = node4["ph"]
     turbidity = node4["turbidity"]
+    conductivity = float(basin.get("conductivity_uScm", node4.get("ec", 0.0)))
 
     discharge = {
         "cu_ppb": cu_ppb,
@@ -21,6 +23,7 @@ def blowdown_predictor(
         "trc_mgL": trc,
         "ph": ph,
         "turbidity_ntu": turbidity,
+        "conductivity_uScm": conductivity,
         "phosphorus_mgL": phosphorus_mgL,
     }
     mass_loadings = {

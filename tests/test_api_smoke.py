@@ -68,3 +68,23 @@ def test_rate_limit_can_trigger(monkeypatch) -> None:
         second = client.get("/health")
         assert first.status_code == 200
         assert second.status_code in {200, 429}
+
+
+def test_model_train_endpoint_trains_and_sets_loaded(monkeypatch, tmp_path) -> None:
+    monkeypatch.setenv("COOLSENSE_API_KEY", "expected")
+    monkeypatch.setenv("COOLSENSE_ALLOW_EMPTY_API_KEY", "false")
+    monkeypatch.setenv("COOLSENSE_MODEL_PATH", str(tmp_path / "trained_model.pt"))
+    with TestClient(app) as client:
+        status_before = client.get("/v1/model/status")
+        assert status_before.status_code == 200
+
+        train = client.post(
+            "/v1/model/train?n_scenarios=60&seed=21",
+            headers={"X-API-Key": "expected"},
+        )
+        assert train.status_code == 200
+        assert train.json()["accepted"] is True
+
+        status_after = client.get("/v1/model/status")
+        assert status_after.status_code == 200
+        assert status_after.json()["model_loaded"] is True

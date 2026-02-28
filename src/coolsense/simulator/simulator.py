@@ -166,5 +166,6 @@ class CoolingTowerSimulator:
                 "true_corrosion": self.corrosion_severity,
                 "true_biocide_residual": self.biocide_residual,
                 "true_biofouling": self.biofouling_level,
+                "ambient_temp_c": self.ambient_temp,
             },
         }

@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from coolsense.optimizer.inference import infer_recommendations, load_model
+from coolsense.optimizer.training import train_model as run_training
 from coolsense.observability.metrics import get_metrics
 from coolsense.providers.simulator import SimulatorProvider
 from coolsense.storage.ring_buffer import RingBuffer
@@ -23,11 +24,28 @@ class OrchestratorService:
 
         self.model = None
         self.model_stats: dict[str, Any] | None = None
+        self.model_loaded = False
+        self.reload_model()
+
+    def reload_model(self) -> bool:
         try:
-            self.model, self.model_stats = load_model(settings.get("model_path", "coolsense_model.pt"))
+            self.model, self.model_stats = load_model(self.settings.get("model_path", "coolsense_model.pt"))
             self.model_loaded = True
+            return True
         except FileNotFoundError:
+            self.model = None
+            self.model_stats = None
             self.model_loaded = False
+            return False
+
+    def train_model(self, n_scenarios: int = 500, seed: int = 42) -> dict[str, Any]:
+        artifact = run_training(
+            model_path=self.settings.get("model_path", "coolsense_model.pt"),
+            n_scenarios=n_scenarios,
+            seed=seed,
+        )
+        self.reload_model()
+        return artifact
 
     async def tick(self) -> dict[str, Any]:
         get_metrics().ticks_total += 1
