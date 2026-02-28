@@ -13,11 +13,11 @@ except ModuleNotFoundError:
     from client import CoolSenseClient
 
 
-st.set_page_config(page_title="CoolSense Dashboard", layout="wide")
+st.set_page_config(page_title="HypaSense Labs Dashboard", layout="wide")
 st_autorefresh(interval=2000, key="coolsense_refresh")
 client = CoolSenseClient()
 
-st.title("CoolSense Dashboard")
+st.title("HypaSense Labs Dashboard")
 
 with st.sidebar:
     st.header("Demo Controls")

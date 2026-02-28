@@ -4,6 +4,7 @@ import asyncio
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 
 from coolsense.api.middleware import request_context_and_rate_limit, reset_rate_limits
@@ -21,7 +22,14 @@ from coolsense.orchestrator.loop import run_loop
 from coolsense.orchestrator.service import OrchestratorService
 from coolsense.streaming.manager import WebSocketManager
 
-app = FastAPI(title="CoolSense API", version="0.1.0")
+app = FastAPI(title="HypaSense Labs API", version="0.1.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080", "http://127.0.0.1:8080"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.middleware("http")(request_context_and_rate_limit)
 
 
