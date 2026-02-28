@@ -1,0 +1,2 @@
+"""CoolSense package."""
+

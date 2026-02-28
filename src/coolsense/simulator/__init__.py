@@ -1,0 +1,2 @@
+"""Cooling tower simulator module."""
+

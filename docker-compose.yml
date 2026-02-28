@@ -1,0 +1,33 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: coolsense-api
+    environment:
+      COOLSENSE_API_KEY: ${COOLSENSE_API_KEY:-dev-key}
+      COOLSENSE_ALLOW_EMPTY_API_KEY: ${COOLSENSE_ALLOW_EMPTY_API_KEY:-true}
+      COOLSENSE_POLL_INTERVAL_SECONDS: ${COOLSENSE_POLL_INTERVAL_SECONDS:-2}
+      COOLSENSE_READ_RATE_LIMIT_PER_MINUTE: ${COOLSENSE_READ_RATE_LIMIT_PER_MINUTE:-120}
+      COOLSENSE_MUTATING_RATE_LIMIT_PER_MINUTE: ${COOLSENSE_MUTATING_RATE_LIMIT_PER_MINUTE:-30}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://coolsense:coolsense@postgres:5432/coolsense}
+      PYTHONPATH: /app/src
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16
+    container_name: coolsense-postgres
+    environment:
+      POSTGRES_DB: coolsense
+      POSTGRES_USER: coolsense
+      POSTGRES_PASSWORD: coolsense
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

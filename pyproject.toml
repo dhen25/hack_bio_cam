@@ -1,7 +1,58 @@
 [project]
-name = "hack-bio-cam"
+name = "coolsense"
 version = "0.1.0"
-description = "Add your description here"
+description = "CoolSense backend for cooling tower simulation and optimization."
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = []
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.116.0",
+    "uvicorn[standard]>=0.35.0",
+    "pydantic>=2.11.0",
+    "httpx>=0.28.0",
+    "pytest>=8.4.0",
+]
+
+[project.optional-dependencies]
+db = [
+    "sqlalchemy>=2.0.0",
+    "psycopg[binary]>=3.2.0",
+]
+ml = [
+    "numpy>=2.0.0",
+    "torch>=2.8.0",
+]
+ui = [
+    "streamlit>=1.49.0",
+    "streamlit-autorefresh>=1.0.1",
+    "plotly>=6.0.0",
+    "websocket-client>=1.8.0",
+]
+dev = [
+    "black>=25.1.0",
+    "ruff>=0.12.0",
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
